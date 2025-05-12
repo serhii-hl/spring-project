@@ -1,4 +1,4 @@
-package core.basesyntax.spring_project;
+package core.basesyntax;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

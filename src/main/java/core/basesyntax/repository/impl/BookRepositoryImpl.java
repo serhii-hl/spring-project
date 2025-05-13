@@ -30,7 +30,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new DataProcessingException("Can`t save the book: " + book);
+            throw new DataProcessingException("Can`t save the book: " + book, e);
         } finally {
             if (session != null) {
                 session.close();
@@ -44,7 +44,7 @@ public class BookRepositoryImpl implements BookRepository {
             Query query = session.createQuery("from Book", Book.class);
             return query.getResultList();
         } catch (Exception e) {
-            throw new DataProcessingException("Can`t find all the books");
+            throw new DataProcessingException("Can`t find all the books", e);
         }
     }
 }

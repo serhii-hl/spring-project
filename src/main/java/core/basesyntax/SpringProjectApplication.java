@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-class SpringProjectApplication {
+public class SpringProjectApplication {
     private final BookService bookService;
 
     @Autowired

@@ -5,6 +5,7 @@ import core.basesyntax.model.Book;
 import core.basesyntax.repository.BookRepository;
 import jakarta.persistence.Query;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -45,6 +46,16 @@ public class BookRepositoryImpl implements BookRepository {
             return query.getResultList();
         } catch (Exception e) {
             throw new DataProcessingException("Can`t find all the books", e);
+        }
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            Query query = session.createQuery("from Book where id = :id", Book.class);
+            return Optional.ofNullable((Book) query.setParameter("id", id).getSingleResult());
+        } catch (Exception e) {
+            throw new DataProcessingException("Can`t find the book by id: " + id, e);
         }
     }
 }

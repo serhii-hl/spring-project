@@ -80,6 +80,11 @@
 			<artifactId>liquibase-core</artifactId>
 			<version>${liquibase.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-maven-plugin</artifactId>
+			<version>${liquibase.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -145,6 +150,15 @@
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-maven-plugin</artifactId>
 			<version>${liquibase.version}</version>
+			<configuration>
+				<propertyFile>src/main/resources/application.properties</propertyFile>
+				<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+				<changeLogFile>db/changelog/db.changelog-master.yaml</changeLogFile>
+				<url>jdbc:mysql://localhost:3306/book_store?serverTimezone=UTC</url>
+				<username>root</username>
+				<password>pass1234</password>
+				<driver>com.mysql.cj.jdbc.Driver</driver>
+			</configuration>
 		</plugin>
 				<plugin>
 					<groupId>com.diffplug.spotless</groupId>

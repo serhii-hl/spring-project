@@ -30,7 +30,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: price
-                  type: java.math.BigDecimal
+                  type: DECIMAL(7, 2)
                   constraints:
                     nullable: false
               - column:

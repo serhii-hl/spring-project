@@ -7,9 +7,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MinPriceSpecificationProvider implements SpecificationProvider<Book> {
+    private static final String KEY = "min_price";
+
     @Override
     public String getKey() {
-        return "min_price";
+        return KEY;
     }
 
     @Override

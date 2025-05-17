@@ -34,7 +34,22 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public List<BookDto> search(@RequestParam BookSearchParameters params) {
+    public List<BookDto> search(
+            @RequestParam(required = false) List<String> titles,
+            @RequestParam(required = false) List<String> authors,
+            @RequestParam(required = false) String isbn,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice
+    ) {
+        String[] titlesArray = titles != null
+                ? titles.toArray(new String[0]) : new String[0];
+        String[] authorsArray = authors != null
+                ? authors.toArray(new String[0]) : new String[0];
+        BookSearchParameters params = new BookSearchParameters(
+                titlesArray,
+                authorsArray,
+                isbn, minPrice, maxPrice
+        );
         return bookService.search(params);
     }
 

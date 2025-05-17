@@ -11,32 +11,37 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
+    private static final String AUTHOR_KEY = "author";
+    private static final String ISBN_KEY = "isbn";
+    private static final String TITLE_KEY = "title";
+    private static final String MINPRICE_KEY = "min_price";
+    private static final String MAXPRICE_KEY = "max_price";
     private final SpecificationProviderManager specificationProviderManager;
 
     @Override
     public Specification<Book> build(BookSearchParameters searchParameters) {
         Specification<Book> spec = Specification.where(null);
         if (searchParameters.authors() != null && searchParameters.authors().length > 0) {
-            spec = spec.and(specificationProviderManager.getProvider("author")
+            spec = spec.and(specificationProviderManager.getProvider(AUTHOR_KEY)
                     .getSpecification(searchParameters.authors()));
         }
         if (searchParameters.isbn() != null && searchParameters.isbn().length() > 0) {
             String isbn = searchParameters.isbn();
-            spec = spec.and(specificationProviderManager.getProvider("isbn")
+            spec = spec.and(specificationProviderManager.getProvider(ISBN_KEY)
                     .getSpecification(new String[]{isbn}));
         }
         if (searchParameters.titles() != null && searchParameters.titles().length > 0) {
-            spec = spec.and(specificationProviderManager.getProvider("title")
+            spec = spec.and(specificationProviderManager.getProvider(TITLE_KEY)
                     .getSpecification(searchParameters.titles()));
         }
         if (searchParameters.minPrice() != null && searchParameters.minPrice() > 0) {
             String[] params = {String.valueOf(searchParameters.minPrice())};
-            spec = spec.and(specificationProviderManager.getProvider("min_price")
+            spec = spec.and(specificationProviderManager.getProvider(MINPRICE_KEY)
                     .getSpecification(params));
         }
         if (searchParameters.minPrice() != null && searchParameters.maxPrice() > 0) {
             String[] params = {String.valueOf(searchParameters.maxPrice())};
-            spec = spec.and(specificationProviderManager.getProvider("max_price")
+            spec = spec.and(specificationProviderManager.getProvider(MAXPRICE_KEY)
                     .getSpecification(params));
         }
         return spec;

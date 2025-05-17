@@ -7,10 +7,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MaxPriceSpecificationProvider implements SpecificationProvider<Book> {
+    private static final String KEY = "max_price";
 
     @Override
     public String getKey() {
-        return "max_price";
+        return KEY;
     }
 
     @Override

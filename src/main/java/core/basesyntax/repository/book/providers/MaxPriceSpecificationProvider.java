@@ -19,7 +19,7 @@ public class MaxPriceSpecificationProvider implements SpecificationProvider<Book
         Integer maxPrice = params.length > 0 && !params[0].isEmpty()
                 ? Integer.parseInt(params[0]) : null;
         return (root, query, criteriaBuilder) ->
-                maxPrice != null ? criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice)
+                maxPrice != null ? criteriaBuilder.lessThanOrEqualTo(root.get(KEY), maxPrice)
                         : criteriaBuilder.conjunction();
     }
 }

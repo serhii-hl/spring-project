@@ -19,7 +19,7 @@ public class MinPriceSpecificationProvider implements SpecificationProvider<Book
         Integer minPrice = params.length > 0 && !params[0].isEmpty()
                 ? Integer.parseInt(params[0]) : null;
         return (root, query, criteriaBuilder) ->
-                minPrice != null ? criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice)
+                minPrice != null ? criteriaBuilder.greaterThanOrEqualTo(root.get(KEY), minPrice)
                         : criteriaBuilder.conjunction();
     }
 }

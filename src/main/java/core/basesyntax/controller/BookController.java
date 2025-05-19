@@ -2,6 +2,7 @@ package core.basesyntax.controller;
 
 import core.basesyntax.dto.BookDto;
 import core.basesyntax.dto.CreateBookRequestDto;
+import core.basesyntax.model.BookSearchParameters;
 import core.basesyntax.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,11 @@ public class BookController {
     @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable Long id) {
         return bookService.findById(id);
+    }
+
+    @GetMapping("/search")
+    public List<BookDto> search(BookSearchParameters params) {
+        return bookService.search(params);
     }
 
     @PostMapping

@@ -1,5 +1,7 @@
 package core.basesyntax.repository.book.providers;
 
+import static core.basesyntax.repository.book.BookSpecificationBuilder.MINPRICE_KEY;
+
 import core.basesyntax.model.Book;
 import core.basesyntax.repository.SpecificationProvider;
 import org.springframework.data.jpa.domain.Specification;
@@ -7,11 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MinPriceSpecificationProvider implements SpecificationProvider<Book> {
-    private static final String KEY = "min_price";
 
     @Override
     public String getKey() {
-        return KEY;
+        return MINPRICE_KEY;
     }
 
     @Override
@@ -19,7 +20,8 @@ public class MinPriceSpecificationProvider implements SpecificationProvider<Book
         Integer minPrice = params.length > 0 && !params[0].isEmpty()
                 ? Integer.parseInt(params[0]) : null;
         return (root, query, criteriaBuilder) ->
-                minPrice != null ? criteriaBuilder.greaterThanOrEqualTo(root.get(KEY), minPrice)
+                minPrice != null
+                        ? criteriaBuilder.greaterThanOrEqualTo(root.get(MINPRICE_KEY), minPrice)
                         : criteriaBuilder.conjunction();
     }
 }

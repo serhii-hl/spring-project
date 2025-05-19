@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
-    private static final String AUTHOR_KEY = "author";
-    private static final String ISBN_KEY = "isbn";
-    private static final String TITLE_KEY = "title";
-    private static final String MINPRICE_KEY = "min_price";
-    private static final String MAXPRICE_KEY = "max_price";
+    public static final String AUTHOR_KEY = "author";
+    public static final String ISBN_KEY = "isbn";
+    public static final String TITLE_KEY = "title";
+    public static final String MINPRICE_KEY = "min_price";
+    public static final String MAXPRICE_KEY = "max_price";
     private final SpecificationProviderManager specificationProviderManager;
 
     @Override

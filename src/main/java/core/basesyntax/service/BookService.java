@@ -3,8 +3,8 @@ package core.basesyntax.service;
 import core.basesyntax.dto.BookDto;
 import core.basesyntax.dto.CreateBookRequestDto;
 import core.basesyntax.model.BookSearchParameters;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
     BookDto save(CreateBookRequestDto bookRequestDto);

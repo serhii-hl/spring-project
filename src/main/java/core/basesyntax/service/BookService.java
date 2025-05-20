@@ -8,6 +8,8 @@ import java.util.List;
 public interface BookService {
     BookDto save(CreateBookRequestDto bookRequestDto);
 
+    BookDto update(CreateBookRequestDto bookRequestDto, Long id);
+
     List<BookDto> findAll();
 
     BookDto findById(Long id);

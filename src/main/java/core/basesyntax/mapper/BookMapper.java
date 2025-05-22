@@ -13,5 +13,5 @@ public interface BookMapper {
 
     public Book toBook(CreateBookRequestDto requestDto);
 
-    public Book updateBook(@MappingTarget Book book, CreateBookRequestDto bookRequestDto);
+    public void updateBook(@MappingTarget Book book, CreateBookRequestDto bookRequestDto);
 }

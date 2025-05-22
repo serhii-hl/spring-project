@@ -9,8 +9,9 @@ import core.basesyntax.repository.book.BookRepository;
 import core.basesyntax.repository.book.BookSpecificationBuilder;
 import core.basesyntax.service.BookService;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -31,15 +32,14 @@ public class BookServiceImpl implements BookService {
     public BookDto update(CreateBookRequestDto bookRequestDto, Long id) {
         Book book = bookRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Could not find Book with id " + id));
-        Book updatedBook = bookMapper.updateBook(book, bookRequestDto);
-        return bookMapper.toDto(bookRepository.save(updatedBook));
+        bookMapper.updateBook(book, bookRequestDto);
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override
-    public List<BookDto> findAll() {
-        return bookRepository.findAll().stream()
-                .map(bookMapper::toDto)
-                .toList();
+    public Page<BookDto> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable)
+                .map(bookMapper::toDto);
     }
 
     @Override
@@ -55,11 +55,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> search(BookSearchParameters bookSearchParameters) {
+    public Page<BookDto> search(BookSearchParameters bookSearchParameters, Pageable pageable) {
         Specification<Book> spec = bookSpecificationBuilder.build(bookSearchParameters);
-        return bookRepository.findAll(spec)
-                .stream()
-                .map(bookMapper::toDto)
-                .toList();
+        return bookRepository.findAll(spec, pageable)
+                .map(bookMapper::toDto);
     }
 }

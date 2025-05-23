@@ -1,7 +1,7 @@
 package core.basesyntax.controller;
 
-import core.basesyntax.dto.BookDto;
-import core.basesyntax.dto.CreateBookRequestDto;
+import core.basesyntax.dto.book.BookDto;
+import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.model.BookSearchParameters;
 import core.basesyntax.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;

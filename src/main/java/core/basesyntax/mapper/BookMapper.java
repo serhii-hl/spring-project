@@ -1,13 +1,14 @@
 package core.basesyntax.mapper;
 
 import core.basesyntax.config.MapperConfig;
-import core.basesyntax.dto.BookDto;
-import core.basesyntax.dto.CreateBookRequestDto;
+import core.basesyntax.dto.book.BookDto;
+import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.model.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(config = MapperConfig.class)
+@Mapper(config = MapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BookMapper {
     public BookDto toDto(Book book);
 

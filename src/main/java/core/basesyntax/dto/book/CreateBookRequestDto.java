@@ -1,8 +1,8 @@
-package core.basesyntax.dto;
+package core.basesyntax.dto.book;
 
-import core.basesyntax.validation.Author;
-import core.basesyntax.validation.Isbn;
-import core.basesyntax.validation.Title;
+import core.basesyntax.validation.book.Isbn;
+import core.basesyntax.validation.book.Title;
+import core.basesyntax.validation.general.Name;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -17,7 +17,7 @@ public class CreateBookRequestDto {
     @Title
     private String title;
     @NotBlank
-    @Author
+    @Name
     private String author;
     @NotBlank
     @Isbn

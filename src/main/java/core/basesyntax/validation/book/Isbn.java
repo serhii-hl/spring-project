@@ -1,6 +1,6 @@
-package core.basesyntax.validation;
+package core.basesyntax.validation.book;
 
-import core.basesyntax.validation.impl.IsbnValidator;
+import core.basesyntax.validation.book.impl.IsbnValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;

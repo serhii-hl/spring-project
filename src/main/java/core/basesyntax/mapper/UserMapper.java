@@ -9,7 +9,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(config = MapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-    public UserDto toUserDto(User user);
+    UserDto toUserDto(User user);
 
-    public User toUser(CreateUserRequestDto createUserRequestDto);
+    User toUser(CreateUserRequestDto createUserRequestDto);
 }

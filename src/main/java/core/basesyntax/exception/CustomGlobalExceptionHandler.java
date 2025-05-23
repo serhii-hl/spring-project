@@ -47,9 +47,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<Object> handleRegistrationException(RegistrationException e) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST);
+        body.put("status", HttpStatus.CONFLICT);
         body.put("message", e.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
     private String getErrorMessage(ObjectError e) {

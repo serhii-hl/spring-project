@@ -26,6 +26,5 @@ public class CreateUserRequestDto {
     @NotBlank
     @Name
     private String lastName;
-    @NotBlank
     private String shippingAddress;
 }

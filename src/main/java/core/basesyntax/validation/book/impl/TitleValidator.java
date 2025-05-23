@@ -6,10 +6,10 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
 public class TitleValidator implements ConstraintValidator<Title, String> {
-    private static final String PATTERN = "^[A-Za-z0-9]{3,}$";
+    private static final String TITLE_PATTERN = "^[A-Za-z0-9]{3,}$";
 
     @Override
     public boolean isValid(String title, ConstraintValidatorContext constraintValidatorContext) {
-        return title != null && Pattern.compile(PATTERN).matcher(title).matches();
+        return title != null && Pattern.compile(TITLE_PATTERN).matcher(title).matches();
     }
 }

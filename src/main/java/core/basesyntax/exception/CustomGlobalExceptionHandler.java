@@ -38,7 +38,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND);
         body.put("message", e.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -47,7 +46,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<Object> handleRegistrationException(RegistrationException e) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.CONFLICT);
         body.put("message", e.getMessage());
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }

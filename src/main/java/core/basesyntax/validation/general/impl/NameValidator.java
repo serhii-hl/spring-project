@@ -6,10 +6,10 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
 public class NameValidator implements ConstraintValidator<Name, String> {
-    private static final String PATTERN = "^[A-Za-z]{3,}$";
+    private static final String NAME_PATTERN = "^[A-Za-z]{3,}$";
 
     @Override
     public boolean isValid(String author, ConstraintValidatorContext constraintValidatorContext) {
-        return author != null && Pattern.compile(PATTERN).matcher(author).matches();
+        return author != null && Pattern.compile(NAME_PATTERN).matcher(author).matches();
     }
 }

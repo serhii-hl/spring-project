@@ -1,11 +1,11 @@
-package core.basesyntax.validation.impl;
+package core.basesyntax.validation.general.impl;
 
-import core.basesyntax.validation.Author;
+import core.basesyntax.validation.general.Name;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
-public class AuthorValidator implements ConstraintValidator<Author, String> {
+public class NameValidator implements ConstraintValidator<Name, String> {
     private static final String PATTERN = "^[A-Za-z]{3,}$";
 
     @Override

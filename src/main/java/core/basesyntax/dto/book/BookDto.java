@@ -1,4 +1,4 @@
-package core.basesyntax.dto;
+package core.basesyntax.dto.book;
 
 import java.math.BigDecimal;
 import lombok.Getter;

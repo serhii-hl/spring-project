@@ -4,10 +4,14 @@ import core.basesyntax.dto.user.CreateUserRequestDto;
 import core.basesyntax.dto.user.UserDto;
 import core.basesyntax.exception.RegistrationException;
 import core.basesyntax.mapper.UserMapper;
+import core.basesyntax.model.Role;
 import core.basesyntax.model.User;
+import core.basesyntax.repository.role.RoleRepository;
 import core.basesyntax.repository.user.UserRepository;
 import core.basesyntax.service.UserService;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,14 +19,20 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDto registerUser(CreateUserRequestDto createUserRequestDto)
-            throws RegistrationException {
-        User user = userMapper.toUser(createUserRequestDto);
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return userMapper.toUserDto(userRepository.save(user));
+    public UserDto registerUser(CreateUserRequestDto createUserRequestDto) {
+        if (userRepository.existsByEmail(createUserRequestDto.getEmail())) {
+            throw new RegistrationException("User with such email already exist "
+                    + createUserRequestDto.getEmail());
         }
-        throw new RegistrationException("User with such email already exist ");
+        User user = userMapper.toUser(createUserRequestDto);
+        Role userRole = roleRepository.findByRole(Role.RoleName.USER)
+                .orElseThrow(() -> new RegistrationException("Role USER not found"));
+        user.setRoles(Set.of(userRole));
+        user.setPassword(passwordEncoder.encode(createUserRequestDto.getPassword()));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 }

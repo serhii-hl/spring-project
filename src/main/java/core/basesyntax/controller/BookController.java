@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +48,7 @@ public class BookController {
         return bookService.search(params, pageable);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create book", description = "Creates a new book with valid input")
@@ -54,6 +56,7 @@ public class BookController {
         return bookService.save(bookRequestDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     @Operation(summary = "Update book", description = "Updates an existing book by ID")
     public BookDto updateBook(@RequestBody @Valid CreateBookRequestDto bookRequestDto,
@@ -61,6 +64,7 @@ public class BookController {
         return bookService.update(bookRequestDto, id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete book", description = "Deletes a book by its ID")
     public void deleteBookById(@PathVariable Long id) {

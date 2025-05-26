@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-admin-user
+      author: serhiiHolenkov
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: email
+                  value: admin@example.com
+              - column:
+                  name: password
+                  value: $2a$10$mD8m3ZdWQszvOKOTXYyoNu1pWkFhKhEAMzujjJeKAv74zoyIh5y0W # admin1918
+              - column:
+                  name: first_name
+                  value: Admin
+              - column:
+                  name: last_name
+                  value: Admin
+              - column:
+                  name: shipping_address
+                  value: Default
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
+
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: "1"
+              - column:
+                  name: role_id
+                  valueComputed: (SELECT id FROM roles WHERE role = 'ADMIN')

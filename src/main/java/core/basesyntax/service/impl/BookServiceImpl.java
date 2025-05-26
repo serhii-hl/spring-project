@@ -1,7 +1,7 @@
 package core.basesyntax.service.impl;
 
-import core.basesyntax.dto.BookDto;
-import core.basesyntax.dto.CreateBookRequestDto;
+import core.basesyntax.dto.book.BookDto;
+import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.mapper.BookMapper;
 import core.basesyntax.model.Book;
 import core.basesyntax.model.BookSearchParameters;

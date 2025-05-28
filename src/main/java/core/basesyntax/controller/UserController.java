@@ -2,7 +2,10 @@ package core.basesyntax.controller;
 
 import core.basesyntax.dto.user.CreateUserRequestDto;
 import core.basesyntax.dto.user.UserDto;
+import core.basesyntax.dto.user.UserLoginRequestDto;
+import core.basesyntax.dto.user.UserLoginResponseDto;
 import core.basesyntax.exception.RegistrationException;
+import core.basesyntax.security.AuthenticationService;
 import core.basesyntax.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class UserController {
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -28,5 +32,11 @@ public class UserController {
     public UserDto register(@RequestBody @Valid CreateUserRequestDto request)
             throws RegistrationException {
         return userService.registerUser(request);
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Login user", description = "Login user")
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto request) {
+        return authenticationService.authenticate(request);
     }
 }

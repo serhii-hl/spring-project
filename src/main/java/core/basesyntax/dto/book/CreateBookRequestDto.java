@@ -4,6 +4,7 @@ import core.basesyntax.validation.book.Isbn;
 import core.basesyntax.validation.book.Title;
 import core.basesyntax.validation.general.Name;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
@@ -28,5 +29,6 @@ public class CreateBookRequestDto {
     private BigDecimal price;
     private String description;
     private String coverImage;
+    @NotEmpty
     private List<Long> categoryIds;
 }

@@ -2,6 +2,7 @@ package core.basesyntax.service.impl;
 
 import core.basesyntax.dto.user.CreateUserRequestDto;
 import core.basesyntax.dto.user.UserDto;
+import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.exception.RegistrationException;
 import core.basesyntax.mapper.UserMapper;
 import core.basesyntax.model.Role;
@@ -34,5 +35,11 @@ public class UserServiceImpl implements UserService {
         user.setRoles(Set.of(userRole));
         user.setPassword(passwordEncoder.encode(createUserRequestDto.getPassword()));
         return userMapper.toUserDto(userRepository.save(user));
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new EntityNotFoundException("User with such email does not exist"));
     }
 }

@@ -5,11 +5,15 @@ import core.basesyntax.dto.user.UserDto;
 import core.basesyntax.dto.user.UserLoginRequestDto;
 import core.basesyntax.dto.user.UserLoginResponseDto;
 import core.basesyntax.exception.RegistrationException;
+import core.basesyntax.mapper.UserMapper;
+import core.basesyntax.model.ShoppingCart;
+import core.basesyntax.repository.shoppingcart.ShoppingCartRepository;
 import core.basesyntax.security.AuthenticationService;
 import core.basesyntax.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.HashSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,12 +29,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final UserMapper userMapper;
+    private final ShoppingCartRepository shoppingCartRepository;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register user", description = "Register a new user")
     public UserDto register(@RequestBody @Valid CreateUserRequestDto request)
             throws RegistrationException {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUser(userMapper.toUser(request));
+        cart.setCartItems(new HashSet<>());
+        shoppingCartRepository.save(cart);
         return userService.registerUser(request);
     }
 

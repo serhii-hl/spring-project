@@ -12,4 +12,5 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long
     Page<ShoppingCartDto> findById(Long categoryId, Pageable pageable);
 
     Optional<ShoppingCart> findByUser(User user);
+
 }

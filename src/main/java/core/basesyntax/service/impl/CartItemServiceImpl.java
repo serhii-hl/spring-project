@@ -1,6 +1,7 @@
 package core.basesyntax.service.impl;
 
 import core.basesyntax.dto.cartitem.CartItemDto;
+import core.basesyntax.dto.cartitem.CartItemResponceDto;
 import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.mapper.CartItemMapper;
 import core.basesyntax.model.CartItem;
@@ -16,9 +17,9 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartItemMapper cartItemMapper;
 
     @Override
-    public CartItemDto create(CartItemDto dto) {
+    public CartItemResponceDto create(CartItemDto dto) {
         repository.save(cartItemMapper.toEntity(dto));
-        return dto;
+        return cartItemMapper.toResponceDto(dto);
     }
 
     @Override

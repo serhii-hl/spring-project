@@ -2,6 +2,7 @@ package core.basesyntax.mapper;
 
 import core.basesyntax.config.MapperConfig;
 import core.basesyntax.dto.cartitem.CartItemDto;
+import core.basesyntax.dto.cartitem.CartItemResponceDto;
 import core.basesyntax.model.Book;
 import core.basesyntax.model.CartItem;
 import org.mapstruct.Mapper;
@@ -10,8 +11,7 @@ import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(config = MapperConfig.class,
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses = {CategoryMapperHelper.class})
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CartItemMapper {
 
     @Mapping(source = "book.id", target = "bookId")
@@ -20,6 +20,8 @@ public interface CartItemMapper {
 
     @Mapping(source = "bookId", target = "book", qualifiedByName = "bookFromId")
     CartItem toEntity(CartItemDto dto);
+
+    public CartItemResponceDto toResponceDto(CartItemDto dto);
 
     @Named("bookFromId")
     default Book bookFromId(Long id) {

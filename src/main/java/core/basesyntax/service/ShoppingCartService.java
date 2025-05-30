@@ -2,6 +2,7 @@ package core.basesyntax.service;
 
 import core.basesyntax.dto.shoppingcart.ShoppingCartDto;
 import core.basesyntax.dto.shoppingcart.UpdateCartItemQuantityDto;
+import core.basesyntax.dto.user.CreateUserRequestDto;
 import core.basesyntax.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,5 +19,7 @@ public interface ShoppingCartService {
 
     ShoppingCartDto getCartByUser(User user);
 
-    public ShoppingCartDto deleteCartItem(User user, Long cartItemId);
+    public void deleteCartItem(User user, Long cartItemId);
+
+    public void createCartForUser(CreateUserRequestDto request);
 }

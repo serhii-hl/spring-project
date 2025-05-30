@@ -2,13 +2,18 @@ package core.basesyntax.service.impl;
 
 import core.basesyntax.dto.shoppingcart.ShoppingCartDto;
 import core.basesyntax.dto.shoppingcart.UpdateCartItemQuantityDto;
+import core.basesyntax.dto.user.CreateUserRequestDto;
 import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.mapper.ShoppingCartMapper;
+import core.basesyntax.mapper.UserMapper;
 import core.basesyntax.model.CartItem;
 import core.basesyntax.model.ShoppingCart;
 import core.basesyntax.model.User;
+import core.basesyntax.repository.cartitem.CartItemRepository;
 import core.basesyntax.repository.shoppingcart.ShoppingCartRepository;
 import core.basesyntax.service.ShoppingCartService;
+import jakarta.transaction.Transactional;
+import java.util.HashSet;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +25,8 @@ import org.springframework.stereotype.Service;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository repository;
     private final ShoppingCartMapper shoppingCartMapper;
+    private final UserMapper userMapper;
+    private final CartItemRepository cartItemRepository;
 
     @Override
     public void delete(Long cartId) {
@@ -35,9 +42,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "ShoppingCart not found for user: " + user.getUsername()));
 
-        Optional<CartItem> cartItem = cart.getCartItems().stream()
-                .filter(item -> item.getBook().getId().equals(bookId))
-                .findFirst();
+        Optional<CartItem> cartItem = cartItemRepository.findByShoppingCartAndBook_Id(cart, bookId);
 
         if (cartItem.isPresent()) {
             cartItem.get().setQuantity(quantity);
@@ -57,13 +62,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         new EntityNotFoundException("Cart not found for user: "
                                 + user.getUsername()));
 
-        CartItem item = cart.getCartItems().stream()
-                .filter(i -> i.getId().equals(cartItemId))
-                .findFirst()
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Cart item not found: " + cartItemId));
-
-        item.setQuantity(quantity);
+        Optional<CartItem> cartItem = cartItemRepository
+                .findByShoppingCartAndBook_Id(cart, cartItemId);
+        if (cartItem.isPresent()) {
+            cartItem.get().setQuantity(quantity);
+        } else {
+            throw new EntityNotFoundException("CartItem with bookId "
+                    + cartItemId + " not found in cart");
+        }
         ShoppingCart updated = repository.save(cart);
         return shoppingCartMapper.toDto(updated);
     }
@@ -82,19 +88,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ShoppingCartDto deleteCartItem(User user, Long cartItemId) {
+    @Transactional
+    public void createCartForUser(CreateUserRequestDto request) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUser(userMapper.toUser(request));
+        cart.setCartItems(new HashSet<>());
+        repository.save(cart);
+    }
+
+    @Override
+    public void deleteCartItem(User user, Long cartItemId) {
         ShoppingCart cart = repository.findByUser(user)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Cart not found for user: "
                                 + user.getUsername()));
 
-        boolean removed = cart.getCartItems().removeIf(item -> item.getId().equals(cartItemId));
-
-        if (!removed) {
-            throw new EntityNotFoundException("CartItem not found with id: " + cartItemId);
-        }
-
-        ShoppingCart updated = repository.save(cart);
-        return shoppingCartMapper.toDto(updated);
+        cartItemRepository.deleteByIdAndShoppingCartId(cartItemId, cart.getId());
     }
 }

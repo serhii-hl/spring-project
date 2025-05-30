@@ -1,5 +1,6 @@
 package core.basesyntax.controller;
 
+import core.basesyntax.dto.cartitem.CartItemDto;
 import core.basesyntax.dto.shoppingcart.ShoppingCartDto;
 import core.basesyntax.dto.shoppingcart.UpdateCartItemQuantityDto;
 import core.basesyntax.model.User;
@@ -15,10 +16,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,20 +39,19 @@ public class ShoppingCartController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create a cart", description = "Add book to the shopping cart")
+    @Operation(summary = "Add cart item to the cart", description = "Add cart item to the cart")
     public ShoppingCartDto createCart(@RequestBody @Valid
-                                          UpdateCartItemQuantityDto updateCartItemQuantityDto,
+                                          CartItemDto cartItemDto,
                                       Principal principal) {
         User user = userService.findUserByEmail(principal.getName());
-        return shoppingCartService.updateCartItemQuantity(user, updateCartItemQuantityDto);
+        return shoppingCartService.addCartItem(user, cartItemDto);
     }
 
-    @PutMapping("/items/{cartItemId}")
-    @Operation(summary = "Update a cart", description = "Update cart item quantity")
-    public ShoppingCartDto updateCart(@RequestParam int quantity, @PathVariable Long cartItemId,
+    public ShoppingCartDto updateCart(@RequestBody @Valid UpdateCartItemQuantityDto dto,
+                                      @PathVariable Long cartItemId,
                                       Principal principal) {
         User user = userService.findUserByEmail(principal.getName());
-        return shoppingCartService.updateCartItemQuantity(user, cartItemId, quantity);
+        return shoppingCartService.updateCartItemQuantity(user, cartItemId, dto.getQuantity());
     }
 
     @DeleteMapping("/items/{cartItemId}")

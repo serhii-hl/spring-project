@@ -2,7 +2,7 @@ package core.basesyntax.mapper;
 
 import core.basesyntax.config.MapperConfig;
 import core.basesyntax.dto.cartitem.CartItemDto;
-import core.basesyntax.dto.cartitem.CartItemResponceDto;
+import core.basesyntax.dto.cartitem.CartItemResponseDto;
 import core.basesyntax.model.Book;
 import core.basesyntax.model.CartItem;
 import org.mapstruct.Mapper;
@@ -21,7 +21,7 @@ public interface CartItemMapper {
     @Mapping(source = "bookId", target = "book", qualifiedByName = "bookFromId")
     CartItem toEntity(CartItemDto dto);
 
-    public CartItemResponceDto toResponceDto(CartItemDto dto);
+    public CartItemResponseDto toResponceDto(CartItemDto dto);
 
     @Named("bookFromId")
     default Book bookFromId(Long id) {

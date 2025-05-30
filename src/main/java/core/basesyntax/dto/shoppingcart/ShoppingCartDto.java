@@ -1,6 +1,6 @@
 package core.basesyntax.dto.shoppingcart;
 
-import core.basesyntax.model.CartItem;
+import core.basesyntax.dto.cartitem.CartItemDto;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,5 +10,5 @@ import lombok.Setter;
 public class ShoppingCartDto {
     private Long id;
     private Long userId;
-    private Set<CartItem> cartItems;
+    private Set<CartItemDto> cartItems;
 }

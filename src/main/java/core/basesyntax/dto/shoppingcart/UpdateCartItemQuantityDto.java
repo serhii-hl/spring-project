@@ -8,7 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateCartItemQuantityDto {
-    @NotNull 
+    @NotNull
+    @Positive
     private Long bookId;
     @Positive
     private int quantity;

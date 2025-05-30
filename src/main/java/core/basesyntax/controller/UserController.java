@@ -6,7 +6,6 @@ import core.basesyntax.dto.user.UserLoginRequestDto;
 import core.basesyntax.dto.user.UserLoginResponseDto;
 import core.basesyntax.exception.RegistrationException;
 import core.basesyntax.security.AuthenticationService;
-import core.basesyntax.service.ShoppingCartService;
 import core.basesyntax.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,14 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
-    private final ShoppingCartService shoppingCartService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register user", description = "Register a new user")
     public UserDto register(@RequestBody @Valid CreateUserRequestDto request)
             throws RegistrationException {
-        shoppingCartService.createCartForUser(request);
         return userService.registerUser(request);
     }
 

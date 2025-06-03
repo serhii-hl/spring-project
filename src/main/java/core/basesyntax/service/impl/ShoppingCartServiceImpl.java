@@ -15,7 +15,6 @@ import core.basesyntax.repository.cartitem.CartItemRepository;
 import core.basesyntax.repository.shoppingcart.ShoppingCartRepository;
 import core.basesyntax.service.ShoppingCartService;
 import jakarta.transaction.Transactional;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,16 +45,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "ShoppingCart not found for user: " + user.getUsername()));
 
-        Optional<CartItem> cartItem = cartItemRepository
-                .findByIdAndShoppingCartId(cartItemId, cart.getId());
-
-        if (cartItem.isPresent()) {
-            cartItem.get().setQuantity(quantity);
-        } else {
-            throw new EntityNotFoundException("CartItem with id "
-                    + cartItemId + " not found in cart");
-        }
-
+        cartItemRepository.findByIdAndShoppingCartId(cartItemId, cart.getId())
+                            .map(item -> {
+                                item.setQuantity(quantity);
+                                return item;
+                            })
+                            .orElseThrow(() -> new EntityNotFoundException(
+                                "CartItem with id " + cartItemId + " not found in cart"));
         ShoppingCart updatedCart = repository.save(cart);
         return shoppingCartMapper.toDto(updatedCart);
     }

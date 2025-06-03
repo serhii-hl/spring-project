@@ -13,8 +13,6 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         uses = {CategoryMapperHelper.class})
 public interface ShoppingCartMapper {
-    @Mapping(source = "userId", target = "user", qualifiedByName = "userFromId")
-    public ShoppingCart toShoppingCart(ShoppingCartDto shoppingCartDto);
 
     @Mapping(source = "user.id", target = "userId")
     public ShoppingCartDto toDto(ShoppingCart shoppingCart);

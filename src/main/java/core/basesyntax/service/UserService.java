@@ -2,11 +2,7 @@ package core.basesyntax.service;
 
 import core.basesyntax.dto.user.CreateUserRequestDto;
 import core.basesyntax.dto.user.UserDto;
-import core.basesyntax.model.User;
 
 public interface UserService {
     UserDto registerUser(CreateUserRequestDto createUserRequestDto);
-
-    User findUserByEmail(String email);
-
 }

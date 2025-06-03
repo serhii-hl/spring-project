@@ -9,9 +9,9 @@ import core.basesyntax.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,8 +32,7 @@ public class ShoppingCartController {
 
     @GetMapping
     @Operation(summary = "Get cart", description = "Get cart")
-    public ShoppingCartDto getCart(Principal principal) {
-        User user = userService.findUserByEmail(principal.getName());
+    public ShoppingCartDto getCart(@AuthenticationPrincipal User user) {
         return shoppingCartService.getCartByUser(user);
     }
 
@@ -42,15 +41,13 @@ public class ShoppingCartController {
     @Operation(summary = "Add cart item to the cart", description = "Add cart item to the cart")
     public ShoppingCartDto createCart(@RequestBody @Valid
                                           CartItemDto cartItemDto,
-                                      Principal principal) {
-        User user = userService.findUserByEmail(principal.getName());
+                                      @AuthenticationPrincipal User user) {
         return shoppingCartService.addCartItem(user, cartItemDto);
     }
 
     public ShoppingCartDto updateCart(@RequestBody @Valid UpdateCartItemQuantityDto dto,
                                       @PathVariable Long cartItemId,
-                                      Principal principal) {
-        User user = userService.findUserByEmail(principal.getName());
+                                      @AuthenticationPrincipal User user) {
         return shoppingCartService.updateCartItemQuantity(user, cartItemId, dto.getQuantity());
     }
 
@@ -58,8 +55,7 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete cart item", description = "Remove an item from the shopping cart")
     public void deleteCart(@PathVariable Long cartItemId,
-                                      Principal principal) {
-        User user = userService.findUserByEmail(principal.getName());
+                           @AuthenticationPrincipal User user) {
         shoppingCartService.deleteCartItem(user, cartItemId);
     }
 }

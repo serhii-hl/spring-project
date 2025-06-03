@@ -8,6 +8,7 @@ import core.basesyntax.model.Role;
 import core.basesyntax.model.User;
 import core.basesyntax.repository.role.RoleRepository;
 import core.basesyntax.repository.user.UserRepository;
+import core.basesyntax.service.ShoppingCartService;
 import core.basesyntax.service.UserService;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserDto registerUser(CreateUserRequestDto createUserRequestDto) {
@@ -33,6 +35,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RegistrationException("Role USER not found"));
         user.setRoles(Set.of(userRole));
         user.setPassword(passwordEncoder.encode(createUserRequestDto.getPassword()));
+        shoppingCartService.createCartForUser(createUserRequestDto);
         return userMapper.toUserDto(userRepository.save(user));
     }
 }

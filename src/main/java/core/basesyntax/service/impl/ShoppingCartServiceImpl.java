@@ -79,6 +79,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    public void clearCart(User user) {
+        ShoppingCart cart = repository.findByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "ShoppingCart not found for user: " + user.getUsername()));
+        cart.getCartItems().clear();
+        cartItemRepository.deleteAllByShoppingCartId(cart.getId());
+        repository.save(cart);
+    }
+
+    @Override
     public void deleteCartItem(User user, Long cartItemId) {
         ShoppingCart cart = repository.findById(user.getId())
                 .orElseThrow(() ->

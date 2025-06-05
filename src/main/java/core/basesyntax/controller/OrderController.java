@@ -1,7 +1,9 @@
 package core.basesyntax.controller;
 
 import core.basesyntax.dto.order.OrderDto;
+import core.basesyntax.dto.order.UpdateOrderResponseDto;
 import core.basesyntax.dto.order.UpdateOrderStatusRequest;
+import core.basesyntax.dto.orderitem.OrderItemDto;
 import core.basesyntax.model.User;
 import core.basesyntax.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +33,10 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    @Operation(summary = "Get order history", description = "Get order history")
-    public Page<OrderDto> getOrders(@AuthenticationPrincipal User user, Pageable pageable) {
-        return orderService.getOrdersByUser(user, pageable);
+    @Operation(summary = "Get all user orders history", 
+            description = "Get all user orders history")
+    public Page<OrderItemDto> getOrders(@AuthenticationPrincipal User user, Pageable pageable) {
+        return orderService.getOrderItemsByUser(user, pageable);
     }
 
     @PostMapping
@@ -43,11 +46,11 @@ public class OrderController {
         return orderService.createOrderFromCart(user);
     }
 
-    @GetMapping("/{orderId}/items/{id}")
+    @GetMapping("/{orderId}/items/{itemId}")
     @Operation(summary = "Get order history", description = "Get order history")
-    public OrderDto getOrder(@PathVariable Long orderId, @PathVariable Long id,
-                             @AuthenticationPrincipal User user) {
-        return orderService.getOrderById(orderId);
+    public OrderItemDto getOrderItem(@PathVariable Long orderId, @PathVariable Long itemId,
+                                     @AuthenticationPrincipal User user) {
+        return orderService.getOrderItemById(orderId, itemId, user);
     }
 
     @DeleteMapping("/{orderId}")
@@ -60,10 +63,10 @@ public class OrderController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Get order history", description = "Get order history")
     @ResponseStatus(HttpStatus.CREATED)
-    public void updateOrderStatus(@AuthenticationPrincipal User user,
-                                  @PathVariable Long orderId,
-                                  @RequestBody UpdateOrderStatusRequest request) {
-        orderService.updateOrderStatus(orderId, user, request.getStatus());
+    public UpdateOrderResponseDto updateOrder(@AuthenticationPrincipal User user,
+                                              @PathVariable Long orderId,
+                                              @RequestBody UpdateOrderStatusRequest request) {
+        return orderService.updateOrderStatus(orderId, user, request.getStatus());
     }
 
 }

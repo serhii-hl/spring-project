@@ -80,11 +80,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void clearCart(User user) {
-        ShoppingCart cart = repository.findByUser(user)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "ShoppingCart not found for user: " + user.getUsername()));
-        cart.getCartItems().clear();
-        cartItemRepository.deleteAllByShoppingCartId(cart.getId());
+        ShoppingCart cart = repository.getReferenceById(user.getId());
+        cart.clearCart();
         repository.save(cart);
     }
 

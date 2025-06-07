@@ -5,7 +5,6 @@ import core.basesyntax.dto.order.OrderDto;
 import core.basesyntax.dto.order.UpdateOrderResponseDto;
 import core.basesyntax.dto.orderitem.OrderItemDto;
 import core.basesyntax.dto.shoppingcart.ShoppingCartDto;
-import core.basesyntax.exception.AccessDeniedException;
 import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.exception.OrderProcessingException;
 import core.basesyntax.mapper.OrderItemMapper;
@@ -56,40 +55,9 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toDto(saved);
     }
 
-    private Order initializeOrder(User user) {
-        Order order = new Order();
-        order.setUser(user);
-        order.setShippingAddress(user.getShippingAddress());
-        order.setOrderDate(LocalDateTime.now());
-        order.setStatus(OrderStatus.NEW);
-        return order;
-    }
-
-    private Set<OrderItem> buildOrderItems(Order order, ShoppingCartDto cart) {
-        Set<OrderItem> items = new HashSet<>();
-        for (CartItemDto cartItem : cart.getCartItems()) {
-            Book book = bookRepository.findById(cartItem.getBookId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Book not found with id " + cartItem.getBookId()));
-            OrderItem item = new OrderItem();
-            item.setOrder(order);
-            item.setBook(book);
-            item.setQuantity(cartItem.getQuantity());
-            item.setPrice(book.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-            items.add(item);
-        }
-        return items;
-    }
-
-    private BigDecimal calculateTotal(Set<OrderItem> items) {
-        return items.stream()
-                .map(OrderItem::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     @Override
-    public Page<OrderItemDto> getOrderItemsByUser(User user, Pageable pageable) {
-        return orderRepository.findAllItemsByUser(user, pageable).map(orderItemMapper::toDto);
+    public Page<OrderDto> getOrdersByUser(User user, Pageable pageable) {
+        return orderRepository.findAllOrdersByUser(user, pageable).map(orderMapper::toDto);
     }
 
     @Override
@@ -101,18 +69,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Page<OrderItemDto> getOrderItemsByOrderId(Long orderId, Pageable pageable, User user) {
+        return orderRepository.findAllItemsByUserAndOrderId(user, orderId, pageable)
+                .map(orderItemMapper::toDto);
+    }
+
+    @Override
     public OrderItemDto getOrderItemById(Long orderId, Long orderItemId, User user) {
-        OrderDto order = getOrderById(orderId);
-        if (!order.getUserId().equals(user.getId())) {
-            throw new AccessDeniedException("You don't have access to this order");
-        }
-        return order.getItems()
-                .stream()
-                .filter(item -> item.getId().equals(orderItemId))
-                .findFirst()
-                .orElseThrow(
-                        () -> new EntityNotFoundException(
-                                "Can`t find an item with id " + orderItemId));
+        return orderItemMapper
+                .toDto(orderRepository.findSecureItem(orderItemId, orderId, user));
     }
 
     @Override
@@ -146,5 +111,36 @@ public class OrderServiceImpl implements OrderService {
         responseDto.setPreviousStatus(order.getStatus());
         responseDto.setUpdatedAt(LocalDateTime.now());
         return responseDto;
+    }
+
+    private Order initializeOrder(User user) {
+        Order order = new Order();
+        order.setUser(user);
+        order.setShippingAddress(user.getShippingAddress());
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.NEW);
+        return order;
+    }
+
+    private Set<OrderItem> buildOrderItems(Order order, ShoppingCartDto cart) {
+        Set<OrderItem> items = new HashSet<>();
+        for (CartItemDto cartItem : cart.getCartItems()) {
+            Book book = bookRepository.findById(cartItem.getBookId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Book not found with id " + cartItem.getBookId()));
+            OrderItem item = new OrderItem();
+            item.setOrder(order);
+            item.setBook(book);
+            item.setQuantity(cartItem.getQuantity());
+            item.setPrice(book.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+            items.add(item);
+        }
+        return items;
+    }
+
+    private BigDecimal calculateTotal(Set<OrderItem> items) {
+        return items.stream()
+                .map(OrderItem::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

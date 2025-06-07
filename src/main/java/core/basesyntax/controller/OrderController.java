@@ -33,10 +33,18 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    @Operation(summary = "Get all user orders history", 
-            description = "Get all user orders history")
-    public Page<OrderItemDto> getOrders(@AuthenticationPrincipal User user, Pageable pageable) {
-        return orderService.getOrderItemsByUser(user, pageable);
+    @Operation(summary = "Get all user order items history",
+            description = "Get all user order items history")
+    public Page<OrderDto> getOrderItems(@AuthenticationPrincipal User user, Pageable pageable) {
+        return orderService.getOrdersByUser(user, pageable);
+    }
+
+    @GetMapping("/{orderId}/items")
+    @Operation(summary = "Get order items from one order history",
+            description = "Get order items from one order history")
+    public Page<OrderItemDto> getOrderItemsFromOrder(@PathVariable Long orderId,
+                                     @AuthenticationPrincipal User user, Pageable pageable) {
+        return orderService.getOrderItemsByOrderId(orderId, pageable, user);
     }
 
     @PostMapping

@@ -11,6 +11,15 @@ import org.springframework.data.repository.query.Param;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("SELECT i FROM OrderItem i WHERE i.order.user = :user")
-    Page<OrderItem> findAllItemsByUser(@Param("user") User user, Pageable pageable);
+    Page<Order> findAllOrdersByUser(User user, Pageable pageable);
+
+    @Query("SELECT i FROM OrderItem i WHERE i.order.user = :user AND i.order.id = :orderId")
+    Page<OrderItem> findAllItemsByUserAndOrderId(@Param("user") User user,
+                                                 @Param("orderId") Long orderId, Pageable pageable);
+
+    @Query("SELECT i FROM OrderItem i WHERE i.id = :id "
+            + "AND i.order.id = :orderId AND i.order.user = :user")
+    OrderItem findSecureItem(@Param("id") Long id,
+                             @Param("orderId") Long orderId,
+                             @Param("user") User user);
 }

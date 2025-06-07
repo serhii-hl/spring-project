@@ -11,13 +11,15 @@ import org.springframework.data.domain.Pageable;
 public interface OrderService {
     OrderDto createOrderFromCart(User user);
 
-    Page<OrderItemDto> getOrderItemsByUser(User user, Pageable pageable);
+    Page<OrderDto> getOrdersByUser(User user, Pageable pageable);
 
     OrderDto getOrderById(Long orderId);
 
     void cancelOrder(Long orderId, User user);
 
     UpdateOrderResponseDto updateOrderStatus(Long orderId, User user, OrderStatus status);
+
+    Page<OrderItemDto> getOrderItemsByOrderId(Long orderId, Pageable pageable, User user);
 
     OrderItemDto getOrderItemById(Long orderId, Long orderItemId, User user);
 }

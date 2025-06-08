@@ -20,6 +20,8 @@ public interface ShoppingCartService {
 
     void createCartForUser(CreateUserRequestDto request);
 
+    void clearCart(User user);
+
     CartItemResponseDto createCartItem(CartItemDto dto);
 
 }

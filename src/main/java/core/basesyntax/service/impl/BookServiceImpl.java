@@ -2,13 +2,13 @@ package core.basesyntax.service.impl;
 
 import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
+import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.mapper.BookMapper;
 import core.basesyntax.model.Book;
 import core.basesyntax.model.BookSearchParameters;
 import core.basesyntax.repository.book.BookRepository;
 import core.basesyntax.repository.book.BookSpecificationBuilder;
 import core.basesyntax.service.BookService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

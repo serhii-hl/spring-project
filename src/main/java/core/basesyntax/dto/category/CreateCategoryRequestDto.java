@@ -1,7 +1,11 @@
 package core.basesyntax.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CreateCategoryRequestDto {
     @NotBlank
     private String name;

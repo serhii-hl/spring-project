@@ -1,9 +1,7 @@
 package core.basesyntax.service.impl;
 
 import core.basesyntax.dto.cartitem.CartItemDto;
-import core.basesyntax.dto.cartitem.CartItemResponseDto;
 import core.basesyntax.dto.shoppingcart.ShoppingCartDto;
-import core.basesyntax.dto.user.CreateUserRequestDto;
 import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.mapper.CartItemMapper;
 import core.basesyntax.mapper.ShoppingCartMapper;
@@ -57,12 +55,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ShoppingCartDto getCart(Long cartId) {
-        return shoppingCartMapper.toDto(repository.findById(cartId).orElseThrow(
-                () -> new EntityNotFoundException("Can`t find entity by id: " + cartId)));
-    }
-
-    @Override
     public ShoppingCartDto getCartByUser(User user) {
         return shoppingCartMapper.toDto(
                 repository.findById(user.getId()).orElseThrow(
@@ -72,9 +64,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void createCartForUser(CreateUserRequestDto request) {
+    public void createCartForUser(User user) {
         ShoppingCart cart = new ShoppingCart();
-        cart.setUser(userMapper.toUser(request));
+        cart.setUser(user);
         repository.save(cart);
     }
 
@@ -95,9 +87,4 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItemRepository.deleteByIdAndShoppingCartId(cartItemId, cart.getId());
     }
 
-    @Override
-    public CartItemResponseDto createCartItem(CartItemDto dto) {
-        cartItemRepository.save(cartItemMapper.toEntity(dto));
-        return cartItemMapper.toResponceDto(dto);
-    }
 }

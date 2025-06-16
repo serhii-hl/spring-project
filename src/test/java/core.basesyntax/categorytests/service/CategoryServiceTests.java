@@ -36,17 +36,10 @@ public class CategoryServiceTests {
     @Test
     @DisplayName("Find all categories should return all categories")
     void findAllShouldReturnPagedDtos() {
-        Category category = new Category();
-        category.setId(1L);
-        category.setName("test");
-        category.setDeleted(false);
-        Page<Category> categoryPage = new PageImpl<>(List.of(category));
-
-        CategoryDto dto = new CategoryDto();
-        dto.setId(1L);
-        dto.setName("test");
-
+        Category category = createCategory();
+        CategoryDto dto = createCategoryDto();
         Pageable pageable = PageRequest.of(0, 10);
+        Page<Category> categoryPage = new PageImpl<>(List.of(category));
 
         Mockito.when(categoryRepository.findAll(pageable)).thenReturn(categoryPage);
         Mockito.when(categoryMapper.toDto(category)).thenReturn(dto);
@@ -56,21 +49,14 @@ public class CategoryServiceTests {
         Assertions.assertTrue(result.hasContent());
         Assertions.assertEquals(1, result.getTotalElements());
         Assertions.assertEquals(1, result.getTotalPages());
-        Assertions.assertEquals("test", result.getContent().get(0).getName());
-        Assertions.assertEquals(1L, result.getContent().get(0).getId());
+        assertCategoryDtoEquals(dto, result.getContent().get(0));
     }
 
     @Test
     @DisplayName("Get category by id should return correct dto")
     void findByIdShouldReturnCorrectDto() {
-        Category category = new Category();
-        category.setId(1L);
-        category.setName("test");
-        category.setDeleted(false);
-
-        CategoryDto dto = new CategoryDto();
-        dto.setId(1L);
-        dto.setName("test");
+        Category category = createCategory();
+        CategoryDto dto = createCategoryDto();
 
         Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         Mockito.when(categoryMapper.toDto(category)).thenReturn(dto);
@@ -78,8 +64,7 @@ public class CategoryServiceTests {
         CategoryDto result = categoryService.getById(1L);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("test", result.getName());
-        Assertions.assertEquals(1L, result.getId());
+        assertCategoryDtoEquals(dto, result);
     }
 
     @Test
@@ -93,69 +78,71 @@ public class CategoryServiceTests {
     @Test
     @DisplayName("Save category should return correct dto")
     void saveCategoryShouldReturnCorrectDto() {
-        Category category = new Category();
-        category.setId(1L);
-        category.setName("test");
-        category.setDeleted(false);
+        CreateCategoryRequestDto requestDto = createCategoryRequestDto();
+        Category category = createCategory();
+        CategoryDto dto = createCategoryDto();
 
-        CategoryDto dto = new CategoryDto();
-        dto.setId(1L);
-        dto.setName("test");
-
-        CreateCategoryRequestDto createCategoryRequestDto = new CreateCategoryRequestDto();
-        createCategoryRequestDto.setName("test");
-
-        Mockito.when(categoryMapper.toCategory(createCategoryRequestDto)).thenReturn(category);
+        Mockito.when(categoryMapper.toCategory(requestDto)).thenReturn(category);
         Mockito.when(categoryRepository.save(category)).thenReturn(category);
         Mockito.when(categoryMapper.toDto(category)).thenReturn(dto);
 
-        CategoryDto result = categoryService.save(createCategoryRequestDto);
+        CategoryDto result = categoryService.save(requestDto);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("test", result.getName());
-        Assertions.assertEquals(1L, result.getId());
+        assertCategoryDtoEquals(dto, result);
     }
 
     @Test
-    @DisplayName("Save category should return correct dto")
+    @DisplayName("Update category should return correct dto")
     void updateCategoryShouldReturnCorrectDto() {
-        Category category = new Category();
-        category.setId(1L);
-        category.setName("test");
-        category.setDeleted(false);
-
-        Category initCategory = new Category();
-        initCategory.setId(1L);
-        initCategory.setName("test");
-        initCategory.setDeleted(false);
-
-        CategoryDto dto = new CategoryDto();
-        dto.setId(1L);
-        dto.setName("test");
-
-        CreateCategoryRequestDto createCategoryRequestDto = new CreateCategoryRequestDto();
-        createCategoryRequestDto.setName("test");
+        CreateCategoryRequestDto requestDto = createCategoryRequestDto();
+        Category initCategory = createCategory();
+        Category updatedCategory = createCategory();
+        CategoryDto dto = createCategoryDto();
 
         Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.of(initCategory));
-        Mockito.doNothing().when(categoryMapper).updateCategory(
-                initCategory, createCategoryRequestDto);
-        Mockito.when(categoryRepository.save(initCategory)).thenReturn(category);
-        Mockito.when(categoryMapper.toDto(category)).thenReturn(dto);
+        Mockito.doNothing().when(categoryMapper).updateCategory(initCategory, requestDto);
+        Mockito.when(categoryRepository.save(initCategory)).thenReturn(updatedCategory);
+        Mockito.when(categoryMapper.toDto(updatedCategory)).thenReturn(dto);
 
-        CategoryDto result = categoryService.update(1L, createCategoryRequestDto);
+        CategoryDto result = categoryService.update(1L, requestDto);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("test", result.getName());
-        Assertions.assertEquals(1L, result.getId());
+        assertCategoryDtoEquals(dto, result);
     }
 
     @Test
     @DisplayName("Delete category by id should call repository")
     void deleteByIdShouldCallRepository() {
         Long id = 1L;
-
         categoryService.deleteById(id);
-
         Mockito.verify(categoryRepository).deleteById(id);
     }
+
+    private Category createCategory() {
+        Category category = new Category();
+        category.setId(1L);
+        category.setName("test");
+        category.setDeleted(false);
+        return category;
+    }
+
+    private CategoryDto createCategoryDto() {
+        CategoryDto dto = new CategoryDto();
+        dto.setId(1L);
+        dto.setName("test");
+        return dto;
+    }
+
+    private CreateCategoryRequestDto createCategoryRequestDto() {
+        CreateCategoryRequestDto dto = new CreateCategoryRequestDto();
+        dto.setName("test");
+        return dto;
+    }
+
+    private void assertCategoryDtoEquals(CategoryDto expected, CategoryDto actual) {
+        Assertions.assertEquals(expected.getId(), actual.getId());
+        Assertions.assertEquals(expected.getName(), actual.getName());
+    }
+
 }

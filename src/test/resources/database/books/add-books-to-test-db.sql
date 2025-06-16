@@ -1,5 +1,5 @@
-INSERT INTO categories (id, name, is_deleted) VALUES (1, 'Programming', false);
-INSERT INTO categories (id, name, is_deleted) VALUES (2, 'History', false);
+INSERT INTO categories (id, name, description, is_deleted) VALUES (1, 'Programming', 'Programming related books', false);
+INSERT INTO categories (id, name, description, is_deleted) VALUES (2, 'History', 'History related books', false);
 
 INSERT INTO books (id, title, author, isbn, price, is_deleted)
 VALUES (1, 'Java', 'Java author', '9780123456789', 49.99, false);

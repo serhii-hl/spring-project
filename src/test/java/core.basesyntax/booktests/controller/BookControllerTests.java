@@ -12,6 +12,8 @@ import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import java.math.BigDecimal;
 import java.util.Set;
+
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
+@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BookControllerTests {
     private static MockMvc mockMvc;

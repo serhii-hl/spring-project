@@ -1,5 +1,6 @@
 package core.basesyntax.booktests.service;
 
+import core.basesyntax.booktests.TestBookFactory;
 import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.exception.EntityNotFoundException;
@@ -9,10 +10,8 @@ import core.basesyntax.model.BookSearchParameters;
 import core.basesyntax.repository.book.BookRepository;
 import core.basesyntax.repository.book.BookSpecificationBuilder;
 import core.basesyntax.service.impl.BookServiceImpl;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -165,48 +164,22 @@ public class BookServiceTests {
     }
 
     private CreateBookRequestDto createRequestDto() {
-        CreateBookRequestDto dto = new CreateBookRequestDto();
-        dto.setAuthor("author");
-        dto.setTitle("title");
-        dto.setDescription("description");
-        dto.setIsbn("9780123456789");
-        dto.setPrice(BigDecimal.valueOf(100));
-        dto.setCategoryIds(Set.of(1L, 2L, 3L));
-        return dto;
+        return TestBookFactory.createBook(
+                "Java", "author", "description",
+                "9780123456789", "image");
     }
 
     private Book createInitialBook() {
-        Book book = new Book();
-        book.setId(1L);
-        book.setAuthor("init_author");
-        book.setTitle("init_title");
-        book.setDescription("init_description");
-        book.setIsbn("9780123456780");
-        book.setPrice(BigDecimal.valueOf(200));
-        return book;
+        return TestBookFactory.createInitialBook();
     }
 
     private Book createUpdatedBook() {
-        Book book = new Book();
-        book.setId(1L);
-        book.setAuthor("author");
-        book.setTitle("title");
-        book.setDescription("description");
-        book.setIsbn("9780123456789");
-        book.setPrice(BigDecimal.valueOf(100));
-        return book;
+        return TestBookFactory.createInitialBook();
     }
 
     private BookDto createBookDto() {
-        BookDto dto = new BookDto();
-        dto.setId(1L);
-        dto.setAuthor("author");
-        dto.setTitle("title");
-        dto.setDescription("description");
-        dto.setIsbn("9780123456789");
-        dto.setPrice(BigDecimal.valueOf(100));
-        dto.setCategoryIds(Set.of(1L, 2L, 3L));
-        return dto;
+        return TestBookFactory.expectedBook(
+                1L, "Javar", "Authorrr", "Javar book", "978-0123456789", "imager");
     }
 
     private void assertBookDtoEquals(BookDto expected, BookDto actual) {

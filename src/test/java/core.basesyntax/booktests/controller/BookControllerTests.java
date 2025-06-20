@@ -8,11 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import core.basesyntax.booktests.TestBookFactory;
 import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
-import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -128,24 +127,13 @@ public class BookControllerTests {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     void createBookSuccess() throws Exception {
-        CreateBookRequestDto createBookRequestDto = new CreateBookRequestDto();
-        createBookRequestDto.setPrice(BigDecimal.valueOf(50));
-        createBookRequestDto.setIsbn("978-0123456789");
-        createBookRequestDto.setAuthor("Author");
-        createBookRequestDto.setDescription("Java book");
-        createBookRequestDto.setTitle("Java");
-        createBookRequestDto.setCoverImage("image");
-        createBookRequestDto.setCategoryIds(Set.of(1L));
+        CreateBookRequestDto createBookRequestDto = TestBookFactory.createBook(
+                "Java", "Author", "Java book",
+                "978-0123456789", "image");
 
-        BookDto expected = new BookDto();
-        expected.setId(1L);
-        expected.setPrice(BigDecimal.valueOf(50));
-        expected.setIsbn("978-0123456789");
-        expected.setAuthor("Author");
-        expected.setDescription("Java book");
-        expected.setTitle("Java");
-        expected.setCoverImage("image");
-        expected.setCategoryIds(Set.of(1L));
+        BookDto expected = TestBookFactory.expectedBook(
+                1L, "Java", "Author", "Java book",
+                "978-0123456789", "image");
 
         String jsonRequest = objectMapper.writeValueAsString(createBookRequestDto);
 
@@ -158,8 +146,8 @@ public class BookControllerTests {
                 .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
-
         BookDto actual = objectMapper.readValue(responseBody, BookDto.class);
+
         Assertions.assertNotNull(actual);
         Assertions.assertNotNull(actual.getId());
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected,
@@ -178,24 +166,13 @@ public class BookControllerTests {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     void updateBookByIdSuccess() throws Exception {
-        CreateBookRequestDto createBookRequestDto = new CreateBookRequestDto();
-        createBookRequestDto.setPrice(BigDecimal.valueOf(50));
-        createBookRequestDto.setIsbn("978-0123456789");
-        createBookRequestDto.setAuthor("Authorrr");
-        createBookRequestDto.setDescription("Javar book");
-        createBookRequestDto.setTitle("Javar");
-        createBookRequestDto.setCoverImage("imager");
-        createBookRequestDto.setCategoryIds(Set.of(1L));
+        CreateBookRequestDto createBookRequestDto = TestBookFactory.createBook(
+                "Javar", "Authorrr", "Javar book",
+                "978-0123456789", "imager");
 
-        BookDto expected = new BookDto();
-        expected.setId(1L);
-        expected.setPrice(BigDecimal.valueOf(50));
-        expected.setIsbn("978-0123456789");
-        expected.setAuthor("Authorrr");
-        expected.setDescription("Javar book");
-        expected.setTitle("Javar");
-        expected.setCoverImage("imager");
-        expected.setCategoryIds(Set.of(1L));
+        BookDto expected = TestBookFactory.expectedBook(
+                1L, "Javar", "Authorrr", "Javar book",
+                "978-0123456789", "imager");
 
         String jsonRequest = objectMapper.writeValueAsString(createBookRequestDto);
 
@@ -208,8 +185,8 @@ public class BookControllerTests {
                 .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
-
         BookDto actual = objectMapper.readValue(responseBody, BookDto.class);
+
         Assertions.assertNotNull(actual);
         Assertions.assertNotNull(actual.getId());
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected,

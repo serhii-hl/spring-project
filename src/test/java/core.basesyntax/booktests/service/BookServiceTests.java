@@ -1,6 +1,6 @@
 package core.basesyntax.booktests.service;
 
-import core.basesyntax.booktests.TestBookFactory;
+import core.basesyntax.booktests.TestUtil;
 import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.exception.EntityNotFoundException;
@@ -164,21 +164,21 @@ public class BookServiceTests {
     }
 
     private CreateBookRequestDto createRequestDto() {
-        return TestBookFactory.createBook(
+        return TestUtil.createBook(
                 "Java", "author", "description",
                 "9780123456789", "image");
     }
 
     private Book createInitialBook() {
-        return TestBookFactory.createInitialBook();
+        return TestUtil.createInitialBook();
     }
 
     private Book createUpdatedBook() {
-        return TestBookFactory.createInitialBook();
+        return TestUtil.createInitialBook();
     }
 
     private BookDto createBookDto() {
-        return TestBookFactory.expectedBook(
+        return TestUtil.expectedBook(
                 1L, "Javar", "Authorrr", "Javar book", "978-0123456789", "imager");
     }
 

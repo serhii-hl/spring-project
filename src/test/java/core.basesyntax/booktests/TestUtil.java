@@ -4,9 +4,10 @@ import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.model.Book;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
-public class TestBookFactory {
+public class TestUtil {
     public static CreateBookRequestDto createBook(String title, String author,
                                                   String description, String isbn,
                                                   String coverImage) {
@@ -45,5 +46,31 @@ public class TestBookFactory {
         book.setIsbn("9780123456780");
         book.setPrice(BigDecimal.valueOf(200));
         return book;
+    }
+
+    public static BookDto createJavaBookDto() {
+        BookDto dto = new BookDto();
+        dto.setId(1L);
+        dto.setTitle("Java");
+        dto.setAuthor("Java author");
+        dto.setIsbn("9780123456789");
+        dto.setPrice(BigDecimal.valueOf(49.99));
+        dto.setCategoryIds(Set.of(1L));
+        return dto;
+    }
+
+    public static BookDto createHistoryBookDto() {
+        BookDto dto = new BookDto();
+        dto.setId(2L);
+        dto.setTitle("History of UA");
+        dto.setAuthor("History author");
+        dto.setIsbn("9780123456780");
+        dto.setPrice(BigDecimal.valueOf(59.99));
+        dto.setCategoryIds(Set.of(2L));
+        return dto;
+    }
+
+    public static List<BookDto> createAllBooks() {
+        return List.of(createJavaBookDto(), createHistoryBookDto());
     }
 }

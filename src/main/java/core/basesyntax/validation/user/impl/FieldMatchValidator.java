@@ -3,7 +3,8 @@ package core.basesyntax.validation.user.impl;
 import core.basesyntax.validation.user.FieldMatch;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.apache.commons.beanutils.BeanUtils;
+import java.util.Objects;
+import org.springframework.beans.BeanWrapperImpl;
 
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
 
@@ -20,24 +21,19 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        try {
-            Object firstObj = BeanUtils.getProperty(value, firstFieldName);
-            Object secondObj = BeanUtils.getProperty(value, secondFieldName);
-
-            boolean valid = (firstObj == null && secondObj == null)
-                    || (firstObj != null && firstObj.equals(secondObj));
-
-            if (!valid) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(message)
-                        .addPropertyNode(secondFieldName)
-                        .addConstraintViolation();
-            }
-
-            return valid;
-        } catch (Exception e) {
-            // You can log or rethrow if you want
-            return false;
+        if (value == null) {
+            return true;
         }
+        BeanWrapperImpl beanWrapper = new BeanWrapperImpl(value);
+        Object firstValue = beanWrapper.getPropertyValue(firstFieldName);
+        Object secondValue = beanWrapper.getPropertyValue(secondFieldName);
+        boolean valid = Objects.equals(firstValue, secondValue);
+        if (!valid) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(message)
+                    .addPropertyNode(secondFieldName)
+                    .addConstraintViolation();
+        }
+        return valid;
     }
 }

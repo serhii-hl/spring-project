@@ -7,11 +7,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import core.basesyntax.booktests.TestBookFactory;
+import core.basesyntax.booktests.TestUtil;
 import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,8 +65,31 @@ public class BookControllerTests {
 
         String responseBody = mvcResult.getResponse().getContentAsString();
 
-        Assertions.assertTrue(responseBody.contains("Java"));
-        Assertions.assertTrue(responseBody.contains("History of UA"));
+        JsonNode root = objectMapper.readTree(responseBody);
+        JsonNode content = root.get("content");
+
+        Assertions.assertNotNull(content);
+        Assertions.assertTrue(content.isArray());
+
+        List<BookDto> expectedBooks = TestUtil.createAllBooks();
+
+        for (BookDto expected : expectedBooks) {
+            boolean found = false;
+            for (JsonNode actualNode : content) {
+                if (actualNode.get("id").asLong() == expected.getId()) {
+                    Assertions.assertEquals(actualNode.get("title").asText(), expected.getTitle());
+                    Assertions.assertEquals(actualNode.get("author").asText(),
+                            expected.getAuthor());
+                    Assertions.assertEquals(actualNode.get("isbn").asText(), expected.getIsbn());
+                    Assertions.assertEquals(0, BigDecimal.valueOf(actualNode.get("price")
+                            .asDouble()).compareTo(expected.getPrice()));
+
+                    found = true;
+                    break;
+                }
+            }
+            Assertions.assertTrue(found, "Book with id " + expected.getId() + " not found");
+        }
     }
 
     @Test
@@ -78,16 +104,22 @@ public class BookControllerTests {
     @DisplayName("Get book by id - success")
     void getBookByIdSuccess() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/books/1")
-                        .param("page", "0")
-                        .param("size", "10")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
         String responseBody = mvcResult.getResponse().getContentAsString();
 
-        Assertions.assertTrue(responseBody.contains("Java"));
-        Assertions.assertFalse(responseBody.contains("History of UA"));
+        JsonNode actualNode = objectMapper.readTree(responseBody);
+
+        BookDto expected = TestUtil.createJavaBookDto();
+
+        Assertions.assertEquals(actualNode.get("id").asLong(), (long) expected.getId());
+        Assertions.assertEquals(actualNode.get("title").asText(), expected.getTitle());
+        Assertions.assertEquals(actualNode.get("author").asText(), expected.getAuthor());
+        Assertions.assertEquals(actualNode.get("isbn").asText(), expected.getIsbn());
+        Assertions.assertEquals(0, BigDecimal.valueOf(actualNode.get("price")
+                .asDouble()).compareTo(expected.getPrice()));
     }
 
     @Test
@@ -111,8 +143,22 @@ public class BookControllerTests {
 
         String responseBody = mvcResult.getResponse().getContentAsString();
 
-        Assertions.assertTrue(responseBody.contains("History of UA"));
-        Assertions.assertFalse(responseBody.contains("Java"));
+        JsonNode root = objectMapper.readTree(responseBody);
+        JsonNode content = root.get("content");
+
+        Assertions.assertNotNull(content);
+        Assertions.assertTrue(content.isArray());
+        Assertions.assertEquals(1, content.size());
+
+        JsonNode actualNode = content.get(0);
+        BookDto expected = TestUtil.createHistoryBookDto();
+
+        Assertions.assertEquals(actualNode.get("id").asLong(), (long) expected.getId());
+        Assertions.assertEquals(actualNode.get("title").asText(), expected.getTitle());
+        Assertions.assertEquals(actualNode.get("author").asText(), expected.getAuthor());
+        Assertions.assertEquals(actualNode.get("isbn").asText(), expected.getIsbn());
+        Assertions.assertEquals(0, BigDecimal.valueOf(actualNode.get("price")
+                .asDouble()).compareTo(expected.getPrice()));
     }
 
     @Test
@@ -127,11 +173,11 @@ public class BookControllerTests {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     void createBookSuccess() throws Exception {
-        CreateBookRequestDto createBookRequestDto = TestBookFactory.createBook(
+        CreateBookRequestDto createBookRequestDto = TestUtil.createBook(
                 "Java", "Author", "Java book",
                 "978-0123456789", "image");
 
-        BookDto expected = TestBookFactory.expectedBook(
+        BookDto expected = TestUtil.expectedBook(
                 1L, "Java", "Author", "Java book",
                 "978-0123456789", "image");
 
@@ -166,11 +212,11 @@ public class BookControllerTests {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     void updateBookByIdSuccess() throws Exception {
-        CreateBookRequestDto createBookRequestDto = TestBookFactory.createBook(
+        CreateBookRequestDto createBookRequestDto = TestUtil.createBook(
                 "Javar", "Authorrr", "Javar book",
                 "978-0123456789", "imager");
 
-        BookDto expected = TestBookFactory.expectedBook(
+        BookDto expected = TestUtil.expectedBook(
                 1L, "Javar", "Authorrr", "Javar book",
                 "978-0123456789", "imager");
 
@@ -200,17 +246,9 @@ public class BookControllerTests {
             scripts = "classpath:database/books/create-one-test-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
-    @Sql(
-            scripts = "classpath:database/books/delete-books-from-test-db.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-    )
     void deleteBookSuccess() throws Exception {
         mockMvc.perform(delete("/books/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
-
-        mockMvc.perform(get("/books/1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
     }
 }

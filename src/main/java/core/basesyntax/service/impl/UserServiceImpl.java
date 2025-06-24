@@ -28,22 +28,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto registerUser(CreateUserRequestDto createUserRequestDto) {
-        boolean exists = userRepository.existsByEmail(createUserRequestDto.getEmail());
-        System.out.println(exists);
         if (userRepository.existsByEmail(createUserRequestDto.getEmail())) {
             throw new RegistrationException("User with such email already exists "
                     + createUserRequestDto.getEmail());
         }
         User user = userMapper.toUser(createUserRequestDto);
         Role userRole = roleRepository.findByRole(Role.RoleName.USER)
-                .orElseThrow(() -> new RegistrationException("Role USER not found"));
+                .orElseThrow(() -> new RegistrationException(Role.RoleName.USER
+                        + " was not found"));
         user.setRoles(Set.of(userRole));
         user.setPassword(passwordEncoder.encode(createUserRequestDto.getPassword()));
-
-        System.out.println("Before saving user: " + createUserRequestDto.getEmail());
         User savedUser = userRepository.save(user);
-        System.out.println("After saving user: " + savedUser.getId());
-
         shoppingCartService.createCartForUser(savedUser);
 
         return userMapper.toUserDto(savedUser);

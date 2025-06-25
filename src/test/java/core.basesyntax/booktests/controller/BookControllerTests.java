@@ -9,14 +9,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import core.basesyntax.booktests.TestUtil;
 import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,35 +61,21 @@ public class BookControllerTests {
                 .andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
+        JsonNode root = objectMapper.readTree(json);
 
-        Map<String, Object> actual = objectMapper.readValue(json,
-                new TypeReference<>() {});
+        List<BookDto> actualBooks = objectMapper.convertValue(
+                root.get("content"),
+                new TypeReference<>() {}
+        );
 
-        List<Map<String, Object>> actualContent =
-                (List<Map<String, Object>>) actual.get("content");
-
+        long totalElements = root.get("totalElements").asLong();
         List<BookDto> expectedBooks = TestUtil.createAllBooks();
 
-        assertThat(actualContent).hasSize(expectedBooks.size());
+        assertThat(actualBooks)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("categoryIds")
+                .containsExactlyInAnyOrderElementsOf(expectedBooks);
 
-        for (BookDto expected : expectedBooks) {
-            boolean found = actualContent.stream().anyMatch(map ->
-                    expected.getId().equals(((Number) map.get("id")).longValue())
-                            && expected.getTitle().equals(map.get("title"))
-                            && expected.getAuthor().equals(map.get("author"))
-                            && expected.getIsbn().equals(map.get("isbn"))
-                            && BigDecimal.valueOf(Double.parseDouble(map.get("price")
-                                    .toString()))
-                                    .compareTo(expected.getPrice()) == 0
-            );
-            assertThat(found)
-                    .withFailMessage(
-                            "Book with id not found or doesn't match",
-                            expected.getId()).isTrue();
-        }
-
-        assertThat(((Number) actual.get("totalElements"))
-                .longValue()).isEqualTo(expectedBooks.size());
+        assertThat(totalElements).isEqualTo(expectedBooks.size());
     }
 
     @Test
@@ -107,26 +92,13 @@ public class BookControllerTests {
                 .andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
-
-        Map<String, Object> actual = objectMapper.readValue(json, new TypeReference<>() {});
+        BookDto actual = objectMapper.readValue(json, BookDto.class);
         BookDto expected = TestUtil.createJavaBookDto();
 
         assertThat(actual)
-                .extracting(
-                        m -> ((Number)m.get("id")).longValue(),
-                        m -> m.get("title"),
-                        m -> m.get("author"),
-                        m -> m.get("isbn"),
-                        m -> BigDecimal.valueOf(Double
-                                .parseDouble(m.get("price").toString()))
-                )
-                .containsExactly(
-                        expected.getId(),
-                        expected.getTitle(),
-                        expected.getAuthor(),
-                        expected.getIsbn(),
-                        expected.getPrice()
-                );
+                .usingRecursiveComparison()
+                .ignoringFields("categoryIds")
+                .isEqualTo(expected);
     }
 
     @Test
@@ -146,32 +118,20 @@ public class BookControllerTests {
                 .andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
+        JsonNode root = objectMapper.readTree(json);
 
-        Map<String, Object> actual = objectMapper.readValue(json, new TypeReference<>() {});
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> actualContent = (List<Map<String, Object>>) actual.get("content");
+        List<BookDto> actualBooks = objectMapper.convertValue(
+                root.get("content"),
+                new TypeReference<>() {}
+        );
 
-        assertThat(actualContent).hasSize(1);
-
-        Map<String, Object> actualNode = actualContent.get(0);
         BookDto expected = TestUtil.createHistoryBookDto();
 
-        assertThat(actualNode)
-                .extracting(
-                        m -> ((Number)m.get("id")).longValue(),
-                        m -> m.get("title"),
-                        m -> m.get("author"),
-                        m -> m.get("isbn"),
-                        m -> BigDecimal.valueOf(Double
-                                .parseDouble(m.get("price").toString()))
-                )
-                .containsExactly(
-                        expected.getId(),
-                        expected.getTitle(),
-                        expected.getAuthor(),
-                        expected.getIsbn(),
-                        expected.getPrice()
-                );
+        assertThat(actualBooks).hasSize(1);
+        assertThat(actualBooks.get(0))
+                .usingRecursiveComparison()
+                .ignoringFields("categoryIds")
+                .isEqualTo(expected);
     }
 
     @Test
@@ -257,3 +217,4 @@ public class BookControllerTests {
                 .andExpect(status().isNoContent());
     }
 }
+

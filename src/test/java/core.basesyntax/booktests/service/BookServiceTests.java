@@ -1,5 +1,12 @@
 package core.basesyntax.booktests.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import core.basesyntax.booktests.TestUtil;
 import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
@@ -12,13 +19,11 @@ import core.basesyntax.repository.book.BookSpecificationBuilder;
 import core.basesyntax.service.impl.BookServiceImpl;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +33,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTests {
+
     @Mock
     private BookRepository bookRepository;
 
@@ -46,15 +52,15 @@ public class BookServiceTests {
         CreateBookRequestDto bookRequestDto = createRequestDto();
         Book book = createUpdatedBook();
         Book savedBook = createUpdatedBook();
-        BookDto bookDto = createBookDto();
+        BookDto expectedDto = createBookDto();
 
-        Mockito.when(bookMapper.toBook(bookRequestDto)).thenReturn(book);
-        Mockito.when(bookRepository.save(book)).thenReturn(savedBook);
-        Mockito.when(bookMapper.toDto(savedBook)).thenReturn(bookDto);
+        when(bookMapper.toBook(bookRequestDto)).thenReturn(book);
+        when(bookRepository.save(book)).thenReturn(savedBook);
+        when(bookMapper.toDto(savedBook)).thenReturn(expectedDto);
 
         BookDto result = bookService.save(bookRequestDto);
 
-        assertBookDtoEquals(bookDto, result);
+        assertEquals(expectedDto, result);
     }
 
     @Test
@@ -63,25 +69,24 @@ public class BookServiceTests {
         CreateBookRequestDto bookRequestDto = createRequestDto();
         Book initialBook = createInitialBook();
         Book updatedBook = createUpdatedBook();
-        BookDto bookDto = createBookDto();
+        BookDto expectedDto = createBookDto();
 
-        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(initialBook));
-        Mockito.doNothing().when(bookMapper).updateBook(Mockito.any(Book.class),
-                Mockito.any(CreateBookRequestDto.class));
-        Mockito.when(bookRepository.save(initialBook)).thenReturn(updatedBook);
-        Mockito.when(bookMapper.toDto(updatedBook)).thenReturn(bookDto);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(initialBook));
+        doNothing().when(bookMapper).updateBook(any(Book.class), any(CreateBookRequestDto.class));
+        when(bookRepository.save(initialBook)).thenReturn(updatedBook);
+        when(bookMapper.toDto(updatedBook)).thenReturn(expectedDto);
 
         BookDto result = bookService.update(bookRequestDto, 1L);
 
-        assertBookDtoEquals(bookDto, result);
+        assertEquals(expectedDto, result);
     }
 
     @Test
     @DisplayName("Find book by id should throw exception if book not found")
     void updateByIdShouldThrowIfNotFound() {
-        Mockito.when(bookRepository.findById(99L)).thenReturn(Optional.empty());
+        when(bookRepository.findById(99L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(EntityNotFoundException.class, () -> bookService.findById(99L));
+        assertThrows(EntityNotFoundException.class, () -> bookService.findById(99L));
     }
 
     @Test
@@ -89,16 +94,16 @@ public class BookServiceTests {
     void findAllShouldReturnPagedDtos() {
         Pageable pageable = PageRequest.of(0, 10);
         Book book = createUpdatedBook();
-        Page<Book> bookPage = new PageImpl<>(List.of(book));
+        Page<Book> bookPage = new PageImpl<>(List.of(book), pageable, 1);
         BookDto dto = createBookDto();
+        Page<BookDto> expectedPage = new PageImpl<>(List.of(dto), pageable, 1);
 
-        Mockito.when(bookRepository.findAll(pageable)).thenReturn(bookPage);
-        Mockito.when(bookMapper.toDto(book)).thenReturn(dto);
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        when(bookMapper.toDto(book)).thenReturn(dto);
 
         Page<BookDto> result = bookService.findAll(pageable);
 
-        Assertions.assertEquals(1, result.getTotalElements());
-        Assertions.assertEquals(1L, result.getContent().get(0).getId());
+        assertEquals(expectedPage, result);
     }
 
     @Test
@@ -110,57 +115,58 @@ public class BookServiceTests {
         Book book = createUpdatedBook();
         BookDto dto = createBookDto();
         Pageable pageable = PageRequest.of(0, 5);
-        Page<Book> bookPage = new PageImpl<>(List.of(book));
+        Page<Book> bookPage = new PageImpl<>(List.of(book), pageable, 1);
 
-        Mockito.when(bookSpecificationBuilder.build(params)).thenReturn(spec);
-        Mockito.when(bookRepository.findAll(spec, pageable)).thenReturn(bookPage);
-        Mockito.when(bookMapper.toDto(book)).thenReturn(dto);
+        when(bookSpecificationBuilder.build(params)).thenReturn(spec);
+        when(bookRepository.findAll(spec, pageable)).thenReturn(bookPage);
+        when(bookMapper.toDto(book)).thenReturn(dto);
+
+        Page<BookDto> expectedPage = new PageImpl<>(List.of(dto), pageable, 1);
 
         Page<BookDto> result = bookService.search(params, pageable);
 
-        Assertions.assertEquals(1, result.getTotalElements());
-        Assertions.assertEquals(1L, result.getContent().get(0).getId());
+        assertEquals(expectedPage, result);
     }
 
     @Test
     @DisplayName("Search book using category id and check if the data is correct")
     void findAllByCategoryShouldReturnCorrectDto() {
         Book book = createUpdatedBook();
-        BookDto bookDto = createBookDto();
+        BookDto expectedDto = createBookDto();
         Pageable pageable = PageRequest.of(0, 5);
-        Page<Book> page = new PageImpl<>(List.of(book));
+        Page<Book> page = new PageImpl<>(List.of(book), pageable, 1);
+        Page<BookDto> expectedPage = new PageImpl<>(List.of(expectedDto), pageable, 1);
 
-        Mockito.when(bookRepository.findAllByCategoryId(1L, pageable)).thenReturn(page);
-        Mockito.when(bookMapper.toDto(book)).thenReturn(bookDto);
+        when(bookRepository.findAllByCategoryId(1L, pageable)).thenReturn(page);
+        when(bookMapper.toDto(book)).thenReturn(expectedDto);
 
         Page<BookDto> result = bookService.findAllByCategoryId(1L, pageable);
 
-        Assertions.assertNotNull(result);
-        Assertions.assertFalse(result.isEmpty());
-        assertBookDtoEquals(bookDto, result.getContent().get(0));
+        assertEquals(expectedPage, result);
     }
 
     @Test
     @DisplayName("Find book by id should return correct DTO")
     void findByIdShouldReturnCorrectDto() {
         Book book = createUpdatedBook();
-        BookDto bookDto = createBookDto();
+        BookDto expectedDto = createBookDto();
 
-        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        Mockito.when(bookMapper.toDto(book)).thenReturn(bookDto);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(bookMapper.toDto(book)).thenReturn(expectedDto);
 
         BookDto result = bookService.findById(1L);
 
-        Assertions.assertNotNull(result);
-        assertBookDtoEquals(bookDto, result);
+        assertEquals(expectedDto, result);
     }
 
     @Test
     @DisplayName("Delete book by id should call repository")
     void deleteByIdShouldCallRepository() {
         Long id = 1L;
+
         bookService.deleteById(id);
-        Mockito.verify(bookRepository).deleteById(id);
+
+        verify(bookRepository).deleteById(id);
     }
 
     private CreateBookRequestDto createRequestDto() {
@@ -180,15 +186,5 @@ public class BookServiceTests {
     private BookDto createBookDto() {
         return TestUtil.expectedBook(
                 1L, "Javar", "Authorrr", "Javar book", "978-0123456789", "imager");
-    }
-
-    private void assertBookDtoEquals(BookDto expected, BookDto actual) {
-        Assertions.assertEquals(expected.getId(), actual.getId());
-        Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
-        Assertions.assertEquals(expected.getTitle(), actual.getTitle());
-        Assertions.assertEquals(expected.getDescription(), actual.getDescription());
-        Assertions.assertEquals(expected.getIsbn(), actual.getIsbn());
-        Assertions.assertEquals(expected.getPrice(), actual.getPrice());
-        Assertions.assertEquals(expected.getCategoryIds(), actual.getCategoryIds());
     }
 }

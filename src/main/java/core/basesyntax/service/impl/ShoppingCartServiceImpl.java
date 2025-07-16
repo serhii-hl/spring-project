@@ -5,7 +5,6 @@ import core.basesyntax.dto.shoppingcart.ShoppingCartDto;
 import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.mapper.CartItemMapper;
 import core.basesyntax.mapper.ShoppingCartMapper;
-import core.basesyntax.mapper.UserMapper;
 import core.basesyntax.model.CartItem;
 import core.basesyntax.model.ShoppingCart;
 import core.basesyntax.model.User;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository repository;
     private final ShoppingCartMapper shoppingCartMapper;
-    private final UserMapper userMapper;
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
 
@@ -39,7 +37,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCartDto updateCartItemQuantity(User user, Long cartItemId, int quantity) {
-        ShoppingCart cart = repository.findById(user.getId())
+        ShoppingCart cart = repository.findByUser(user)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "ShoppingCart not found for user: " + user.getUsername()));
 
@@ -57,7 +55,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto getCartByUser(User user) {
         return shoppingCartMapper.toDto(
-                repository.findById(user.getId()).orElseThrow(
+                repository.findByUser(user).orElseThrow(
                         () -> new EntityNotFoundException("Can`t find user: "
                                 + user.getUsername()))
         );
@@ -72,17 +70,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void clearCart(User user) {
-        ShoppingCart cart = repository.getReferenceById(user.getId());
+        ShoppingCart cart = repository.findByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cart not found for user: " + user.getUsername()));
         cart.clearCart();
         repository.save(cart);
     }
 
     @Override
     public void deleteCartItem(User user, Long cartItemId) {
-        ShoppingCart cart = repository.findById(user.getId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Cart not found for user: "
-                                + user.getUsername()));
+        ShoppingCart cart = repository.findByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cart not found for user: " + user.getUsername()));
 
         cartItemRepository.deleteByIdAndShoppingCartId(cartItemId, cart.getId());
     }

@@ -11,7 +11,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(config = MapperConfig.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses = {CategoryMapperHelper.class})
+        uses = {CategoryMapperHelper.class, CartItemMapper.class})
 public interface ShoppingCartMapper {
 
     @Mapping(source = "user.id", target = "userId")

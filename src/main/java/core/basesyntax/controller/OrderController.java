@@ -55,21 +55,21 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/items/{itemId}")
-    @Operation(summary = "Get order history", description = "Get order history")
+    @Operation(summary = "Get order items", description = "Get order items")
     public OrderItemDto getOrderItem(@PathVariable Long orderId, @PathVariable Long itemId,
                                      @AuthenticationPrincipal User user) {
         return orderService.getOrderItemById(orderId, itemId, user);
     }
 
     @DeleteMapping("/{orderId}")
-    @Operation(summary = "Get order history", description = "Get order history")
+    @Operation(summary = "Delete order by id", description = "Delete order by id")
     public void deleteOrder(@AuthenticationPrincipal User user, @PathVariable Long orderId) {
         orderService.cancelOrder(orderId, user);
     }
 
     @PatchMapping("/{orderId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "Get order history", description = "Get order history")
+    @Operation(summary = "Update an order", description = "Update an order")
     @ResponseStatus(HttpStatus.CREATED)
     public UpdateOrderResponseDto updateOrder(@AuthenticationPrincipal User user,
                                               @PathVariable Long orderId,

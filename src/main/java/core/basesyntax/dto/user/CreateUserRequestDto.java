@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+@FieldMatch(first = "password", second = "repeatPassword", message = "Passwords do not match")
 @Getter
 @Setter
 public class CreateUserRequestDto {
@@ -18,7 +19,6 @@ public class CreateUserRequestDto {
     @Password
     private String password;
     @NotBlank
-    @FieldMatch
     private String repeatPassword;
     @NotBlank
     @Name

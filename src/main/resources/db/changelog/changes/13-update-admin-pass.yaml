@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-admin-password
+      author: serhiiHolenkov
+      changes:
+        - update:
+            tableName: users
+            columns:
+              - column:
+                  name: password
+                  value: "$2a$10$DgNlWh04Qg8zvZRzWyClzO3O4sLguBBT6Q.6cPfda38D4nP9tmdFO"
+            where: email = 'admin@example.com'

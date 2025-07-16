@@ -10,6 +10,7 @@ import core.basesyntax.repository.role.RoleRepository;
 import core.basesyntax.repository.user.UserRepository;
 import core.basesyntax.service.ShoppingCartService;
 import core.basesyntax.service.UserService;
+import jakarta.transaction.Transactional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,18 +25,22 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ShoppingCartService shoppingCartService;
 
+    @Transactional
     @Override
     public UserDto registerUser(CreateUserRequestDto createUserRequestDto) {
         if (userRepository.existsByEmail(createUserRequestDto.getEmail())) {
-            throw new RegistrationException("User with such email already exist "
+            throw new RegistrationException("User with such email already exists "
                     + createUserRequestDto.getEmail());
         }
         User user = userMapper.toUser(createUserRequestDto);
         Role userRole = roleRepository.findByRole(Role.RoleName.USER)
-                .orElseThrow(() -> new RegistrationException("Role USER not found"));
+                .orElseThrow(() -> new RegistrationException(Role.RoleName.USER
+                        + " was not found"));
         user.setRoles(Set.of(userRole));
         user.setPassword(passwordEncoder.encode(createUserRequestDto.getPassword()));
-        shoppingCartService.createCartForUser(createUserRequestDto);
-        return userMapper.toUserDto(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+        shoppingCartService.createCartForUser(savedUser);
+
+        return userMapper.toUserDto(savedUser);
     }
 }

@@ -20,7 +20,7 @@ public interface BookMapper {
 
     public BookDto toDto(Book book);
 
-    public Book toBook(CreateBookRequestDto requestDto);
+    public Book toBook(CreateBookRequestDto requestDto, @Context CategoryMapperHelper helper);
 
     public void updateBook(@MappingTarget Book book, CreateBookRequestDto bookRequestDto);
 

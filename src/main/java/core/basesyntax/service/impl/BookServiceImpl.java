@@ -4,6 +4,7 @@ import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.mapper.BookMapper;
+import core.basesyntax.mapper.CategoryMapperHelper;
 import core.basesyntax.model.Book;
 import core.basesyntax.model.BookSearchParameters;
 import core.basesyntax.repository.book.BookRepository;
@@ -21,10 +22,11 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder bookSpecificationBuilder;
+    private final CategoryMapperHelper categoryMapperHelper;
 
     @Override
     public BookDto save(CreateBookRequestDto bookRequestDto) {
-        Book book = bookMapper.toBook(bookRequestDto);
+        Book book = bookMapper.toBook(bookRequestDto, categoryMapperHelper);
         return bookMapper.toDto(bookRepository.save(book));
     }
 

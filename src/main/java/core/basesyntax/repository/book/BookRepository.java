@@ -2,6 +2,7 @@ package core.basesyntax.repository.book;
 
 import core.basesyntax.model.Book;
 import jakarta.annotation.Nullable;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,8 +12,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
     @EntityGraph(attributePaths = {"categories"})
     @Query("""
@@ -21,7 +20,7 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
     WHERE c.id = :categoryId
       AND b.isDeleted = false
       AND c.isDeleted = false
-""")
+                """)
     Page<Book> findAllByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
     @EntityGraph(attributePaths = "categories")

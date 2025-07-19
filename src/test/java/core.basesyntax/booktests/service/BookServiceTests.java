@@ -12,6 +12,7 @@ import core.basesyntax.dto.book.BookDto;
 import core.basesyntax.dto.book.CreateBookRequestDto;
 import core.basesyntax.exception.EntityNotFoundException;
 import core.basesyntax.mapper.BookMapper;
+import core.basesyntax.mapper.CategoryMapperHelper;
 import core.basesyntax.model.Book;
 import core.basesyntax.model.BookSearchParameters;
 import core.basesyntax.repository.book.BookRepository;
@@ -38,6 +39,9 @@ public class BookServiceTests {
     private BookRepository bookRepository;
 
     @Mock
+    private CategoryMapperHelper categoryMapperHelper;
+
+    @Mock
     private BookMapper bookMapper;
 
     @Mock
@@ -54,7 +58,7 @@ public class BookServiceTests {
         Book savedBook = createUpdatedBook();
         BookDto expectedDto = createBookDto();
 
-        when(bookMapper.toBook(bookRequestDto)).thenReturn(book);
+        when(bookMapper.toBook(bookRequestDto, categoryMapperHelper)).thenReturn(book);
         when(bookRepository.save(book)).thenReturn(savedBook);
         when(bookMapper.toDto(savedBook)).thenReturn(expectedDto);
 

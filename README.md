@@ -27,7 +27,7 @@ shopping cart, and order processing logic.
 
 - Admin: Can add, update, delete books; view all users and orders.
 - User: Can register/login, browse books, add to cart, and place orders.
-- 
+
 ## Main Features:
 
 # Authentication & Authorization
@@ -64,10 +64,23 @@ This project uses the following tools to maintain clean and consistent code:
 
 https://www.loom.com/share/5a487b110ed04385b54fa2d73ab0aceb?sid=b4c45c83-60d3-460b-afd8-68319314a5af
 
+## Postman collection:
+
+https://web.postman.co/workspace/My-Workspace~1aaecfe4-bf1e-4ea4-82e2-d2c99d18913d/collection/44947335-a272c8b3-efc8-4bff-8cf0-d904e98af5e7?action=share&creator=44947335
+
+## Swagger link:
+
+http://localhost:8080/swagger-ui/index.html
+
 ## Setup
 
-1. Download my project to your PC
-2. Please have installed Docker
-3. Before running the application, create a `.env` file in the root directory 
-by copying the provided `.env.template`
-4. Test all endpoints on Postman :)
+# First, ensure you have the following installed:`
+- Java Development Kit (JDK)
+- Docker and Docker Compose
+# Clone the repository (link)
+# Create an .env file with the necessary environment variables. (See .env.template for a sample.)
+# Repackage the project with mvn clean package command
+# Run the following commands to build and start the Docker containers:
+- docker-compose build 
+- docker-compose up.
+# The application should now be running at http://localhost:8088

@@ -77,10 +77,10 @@ http://localhost:8080/swagger-ui/index.html
 # First, ensure you have the following installed:`
 - Java Development Kit (JDK)
 - Docker and Docker Compose
-# Clone the repository (link)
+# Clone the repository (https://github.com/serhii-hl/spring-project)
 # Create an .env file with the necessary environment variables. (See .env.template for a sample.)
 # Repackage the project with mvn clean package command
 # Run the following commands to build and start the Docker containers:
 - docker-compose build 
 - docker-compose up.
-# The application should now be running at http://localhost:8088
+# The application should now be running at http://localhost:8080
